@@ -1,26 +1,11 @@
 import { z } from "zod";
 
-export const filterSchema = z
-  .object({
-    search: z.string().optional(),
-    categories: z.array(z.string()).optional(),
-    minPrice: z.coerce.number().min(0).optional(),
-    maxPrice: z.coerce.number().min(0).optional(),
-    rating: z.string().optional(),
-    discountedOnly: z.boolean().optional(),
-    minDiscountPercent: z.coerce.number().min(0).max(100).optional(),
-  })
-  .refine(
-    (data) => {
-      if (data.minPrice !== undefined && data.maxPrice !== undefined) {
-        return data.maxPrice >= data.minPrice;
-      }
-      return true;
-    },
-    {
-      message: "Max price must be greater than or equal to min price",
-      path: ["maxPrice"],
-    }
-  );
+export const editSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  price: z.coerce.number().min(0, "Price must be positive"),
+  rating: z.coerce.number().min(0).max(5).optional(),
+  discountPercentage: z.coerce.number().min(0).max(100).optional(),
+  description: z.string().optional(),
+});
 
-export type FilterFormValues = z.infer<typeof filterSchema>;
+export type EditFormValues = z.infer<typeof editSchema>;

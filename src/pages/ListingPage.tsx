@@ -1,8 +1,9 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ProductGrid } from "@/components/products/ProductGrid";
+import { Button } from "@/components/ui/button";
 import type { FilterFormValues } from "@/schemas/filterSchema";
 import { Loader2 } from "lucide-react";
 import { parseFilter } from "@/helpers/parseFilter";
@@ -10,13 +11,31 @@ import { FILTER_MAP } from "@/constants/filter.const";
 import { createProductFilter } from "@/helpers/createProductFilter";
 
 export function ListingPage() {
-  const { products, loading, error } = useProducts();
+  const { products, loading, error, hasMore, total, loadMore } = useProducts();
   const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState<FilterFormValues>({});
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setFilters(parseFilter<FilterFormValues>(searchParams, FILTER_MAP));
   }, [searchParams]);
+
+  useEffect(() => {
+    if (!loadMoreRef.current || loading || !hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => observer.disconnect();
+  }, [loading, hasMore, loadMore]);
 
   const categories = useMemo(() => {
     const uniqueCategories = new Set(products.map((p) => p.category));
@@ -60,7 +79,8 @@ export function ListingPage() {
 
     setSearchParams(params);
   };
-  if (loading) {
+
+  if (loading && products.length === 0) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader2
@@ -91,10 +111,27 @@ export function ListingPage() {
         <div className="mb-6">
           <h1 className="text-3xl font-bold">Products</h1>
           <p className="mt-2 text-muted-foreground">
-            Showing {filteredProducts.length} of {products.length} products
+            Showing {filteredProducts.length} of {total} products
+            {products.length < total && ` (${products.length} loaded)`}
           </p>
         </div>
         <ProductGrid products={filteredProducts} />
+
+        {hasMore && (
+          <div ref={loadMoreRef} className="mt-8 flex justify-center py-8">
+            {loading && (
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            )}
+          </div>
+        )}
+
+        {hasMore && !loading && (
+          <div className="mt-8 flex justify-center">
+            <Button onClick={loadMore} variant="outline">
+              Load More Products
+            </Button>
+          </div>
+        )}
       </main>
     </div>
   );

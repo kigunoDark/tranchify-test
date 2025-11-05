@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { Product } from "@/types/product";
 import { Star } from "lucide-react";
+import { ProductImage } from "./ProductImage";
 
 interface ProductCardProps {
   product: Product;
@@ -13,9 +14,10 @@ export function ProductCard({ product }: ProductCardProps) {
       className="group block rounded-lg border border-border bg-background p-4 transition-all hover:shadow-lg"
     >
       <div className="aspect-square overflow-hidden rounded-md bg-muted">
-        <img
+        <ProductImage
           src={product.thumbnail}
           alt={product.title}
+          priority={true}
           className="h-full w-full object-cover transition-transform group-hover:scale-105"
         />
       </div>

@@ -2,8 +2,13 @@ import type { Product, ProductsResponse } from "@/types/product";
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 
-export async function fetchProducts(): Promise<ProductsResponse> {
-  const response = await fetch(`${API_BASE}/products?limit=100`);
+export async function fetchProducts(
+  limit = 10,
+  skip = 0
+): Promise<ProductsResponse> {
+  const response = await fetch(
+    `${API_BASE}/products?limit=${limit}&skip=${skip}`
+  );
   if (!response.ok) {
     throw new Error("Failed to fetch products");
   }
