@@ -6,6 +6,7 @@ import type { Product } from '@/types/product'
  *
  * @param {FilterFormValues} filters - The filter values to apply.
  * @returns {(product: Product) => boolean} A function that takes a product and returns `true` if it matches all filter criteria.
+ * 
  */
 export const createProductFilter = (filters: FilterFormValues) => (product: Product) => {
   const checks = [

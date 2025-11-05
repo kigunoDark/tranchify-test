@@ -10,6 +10,7 @@ const AUTH_KEY = import.meta.env.AUTH_KEY
  *   login: () => void;
  *   logout: () => void;
  * }} An object containing the authentication state and functions to log in and log out.
+ * 
  */
 
 export function useAuth() {
