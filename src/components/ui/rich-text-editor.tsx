@@ -2,8 +2,6 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Bold, Italic, List, ListOrdered } from 'lucide-react'
 import { Button } from './button'
-import { cn } from '@/lib/utils'
-
 
 interface RichTextEditorProps {
   content: string
@@ -15,6 +13,21 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
+        bulletList: {
+          HTMLAttributes: {
+            class: 'list-disc list-outside ml-4',
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: 'list-decimal list-outside ml-4',
+          },
+        },
+        listItem: {
+          HTMLAttributes: {
+            class: 'my-1',
+          },
+        },
         heading: false,
         blockquote: false,
         codeBlock: false,
@@ -27,31 +40,25 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
     },
     editorProps: {
       attributes: {
-        className: cn(
-          'prose prose-sm max-w-none min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-        ),
+        class: 'min-h-[120px] p-4 border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring',
       },
     },
   })
 
-  if (!editor) return null
+  if (!editor) {
+    return (
+      <div className="min-h-[120px] border rounded-md bg-background p-4 text-sm text-muted-foreground">
+        Loading editor...
+      </div>
+    )
+  }
 
   const toggleBulletList = () => {
-    if (!editor) return
-    if (editor.isActive('bulletList')) {
-      editor.chain().focus().liftListItem('listItem').run()
-    } else {
-      editor.chain().focus().toggleBulletList().run()
-    }
+    editor.chain().focus().toggleBulletList().run()
   }
 
   const toggleOrderedList = () => {
-    if (!editor) return
-    if (editor.isActive('orderedList')) {
-      editor.chain().focus().liftListItem('listItem').run()
-    } else {
-      editor.chain().focus().toggleOrderedList().run()
-    }
+    editor.chain().focus().toggleOrderedList().run()
   }
 
   return (
@@ -96,7 +103,9 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
         </Button>
       </div>
 
-      <EditorContent editor={editor} placeholder={placeholder} />
+      <div className="border rounded-md bg-background">
+        <EditorContent editor={editor} placeholder={placeholder} />
+      </div>
     </div>
   )
 }
