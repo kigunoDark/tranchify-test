@@ -1,10 +1,18 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { LogIn, LogOut, Package } from "lucide-react";
 
 export function Header() {
   const { isAuthenticated, login, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    if (location.pathname.includes("/product/")) {
+      navigate("/");
+    }
+  };
 
   return (
     <header className="relative sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -19,7 +27,7 @@ export function Header() {
             <Button
               variant="outline"
               size="sm"
-              onClick={logout}
+              onClick={handleLogout}
               aria-label="Logout"
             >
               <LogOut className="mr-2 h-4 w-4" />

@@ -1,27 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 
-const AUTH_KEY = "tranchify_auth";
+const AUTH_KEY = import.meta.env.AUTH_KEY;
 
-/**
- * Mock authentication hook using localStorage
- */
 export function useAuth() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem(AUTH_KEY) === "true";
+  });
 
-  useEffect(() => {
-    const authStatus = localStorage.getItem(AUTH_KEY);
-    setIsAuthenticated(authStatus === "true");
-  }, []);
-
-  const login = () => {
+  const login = useCallback(() => {
     localStorage.setItem(AUTH_KEY, "true");
     setIsAuthenticated(true);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem(AUTH_KEY);
     setIsAuthenticated(false);
-  };
+  }, []);
 
   return { isAuthenticated, login, logout };
 }

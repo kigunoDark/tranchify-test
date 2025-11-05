@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useProduct, useProductEdit } from "@/hooks/useProducts";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { ProductImage } from "@/components/products/ProductImage";
+import { ErrorPage } from "./ErrorPage";
 
 export function DetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -34,20 +35,13 @@ export function DetailPage() {
 
   if (error || !product) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-red-600">Product Not Found</h2>
-          <p className="mt-2 text-muted-foreground">
-            The product you're looking for doesn't exist.
-          </p>
-          <Link to="/" className="mt-4 inline-block">
-            <Button>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Products
-            </Button>
-          </Link>
-        </div>
-      </div>
+      <ErrorPage
+        code="404"
+        title="Product Not Found"
+        description="The product you're looking for doesn't exist or may have been removed."
+        actionLabel="Back to Products"
+        actionTo="/"
+      />
     );
   }
 
